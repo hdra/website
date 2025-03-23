@@ -1,16 +1,40 @@
 ---
-
+import Baselayout from '../layouts/Baselayout.astro';
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Baselayout pageTitle="hendra.dev / index">
+			<section class="intro">
+					<p>Hi, I'm a software developer with a passion for photography. This is my corner of the internet where I share my thoughts, projects, and creative work.</p>
+			</section>
+			
+			<section class="featured">
+					<h2>Latest Posts</h2>
+					<div class="card-grid">
+							<article class="card">
+									<h3>Building a Scalable API with Node.js</h3>
+									<p>An exploration of best practices when designing APIs that can grow with your user base.</p>
+									<a href="#">Read more →</a>
+							</article>
+							<article class="card">
+									<h3>Color Theory in UI Design</h3>
+									<p>How understanding color relationships can dramatically improve your interface designs.</p>
+									<a href="#">Read more →</a>
+							</article>
+					</div>
+			</section>
+			
+			<section class="featured">
+					<h2>Recent Photos</h2>
+					<div class="card-grid">
+							<article class="card">
+									<h3>Urban Geometry</h3>
+									<p>A study of lines and shapes in the city landscape.</p>
+									<a href="#">View gallery →</a>
+							</article>
+							<article class="card">
+									<h3>Morning Light</h3>
+									<p>Capturing the first rays of sunlight in natural settings.</p>
+									<a href="#">View gallery →</a>
+							</article>
+					</div>
+			</section>
+</Baselayout>

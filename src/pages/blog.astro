@@ -1,0 +1,16 @@
+---
+import Baselayout from '../layouts/Baselayout.astro';
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("blog");
+---
+
+<Baselayout pageTitle="hendra.dev / index">
+	<ul>
+	{
+		allPosts.map( (post) => (
+			<li><a href={`/posts/${post.id}`}>{post.data.title}</a></li>
+		) )
+	}
+	</ul>
+</Baselayout>

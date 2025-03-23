@@ -1,0 +1,12 @@
+---
+import Baselayout from '../layouts/Baselayout.astro';
+const { frontmatter } = Astro.props;
+---
+
+<Baselayout pageTitle="hendra.dev / index">
+    <meta charset="utf-8" />
+    <h1>{frontmatter.title}</h1>
+    <p>{frontmatter.date.toString().slice(0,10)}</p>
+    <slot />
+</Baselayout>
+

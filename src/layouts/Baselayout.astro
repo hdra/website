@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Personal Website</title>
+</head>
+<body>
+    <header>
+        <h1>Hendra.dev</h1>
+        <nav>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/blog">Photography</a></li>
+              <li><a href="/blog">Links</a></li>
+              <li><a href="/blog">About/Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+      <slot/>
+    </main>
+    
+    <footer>
+        <p>built with love via astro</p>
+    </footer>
+</body>
+</html>
