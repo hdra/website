@@ -1,29 +1,12 @@
 ---
-import Baselayout from './Baselayout.astro';
+import Baselayout from '../layouts/Baselayout.astro';
 const { frontmatter } = Astro.props;
-
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
 ---
-<Baselayout pageTitle={frontmatter.title}>
-    <article class="blog-post">
-        <header style="margin-bottom: 3rem;">
-            <span class="date" style="font-family: var(--font-sans); color: #999; font-size: 0.9rem;">{formatDate(frontmatter.date)}</span>
-            <h1 style="margin-top: 0.5rem; font-size: 2.8rem; line-height: 1.2;">{frontmatter.title}</h1>
-            {frontmatter.tags && (
-                <div style="margin-top: 1rem; font-family: var(--font-sans); font-size: 0.8rem; color: #777;">
-                    {frontmatter.tags.map(tag => `#${tag} `)}
-                </div>
-            )}
-        </header>
-        
-        <div class="content" style="font-size: 1.1rem;">
-            <slot />
-        </div>
-    </article>
+
+<Baselayout pageTitle="hendra.dev / index">
+    <meta charset="utf-8" />
+    <h1>{frontmatter.title}</h1>
+    <p>{frontmatter.date.toString().slice(0,10)}</p>
+    <slot />
 </Baselayout>
+
