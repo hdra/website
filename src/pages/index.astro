@@ -1,40 +1,80 @@
 ---
 import Baselayout from '../layouts/Baselayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const allProjects = await getCollection('projects');
+const allPhotos = await getCollection('photography');
+
+const recentPosts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const recentProjects = allProjects.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const recentPhotos = allPhotos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
 ---
-<Baselayout pageTitle="hendra.dev / index">
-			<section class="intro">
-					<p>Hi, I'm a software developer with a passion for photography. This is my corner of the internet where I share my thoughts, projects, and creative work.</p>
-			</section>
-			
-			<section class="featured">
-					<h2>Latest Posts</h2>
-					<div class="card-grid">
-							<article class="card">
-									<h3>Latest post 1</h3>
-									<p>Something about database index maybe</p>
-									<a href="#">Read more →</a>
-							</article>
-							<article class="card">
-									<h3>Latest post 2</h3>
-									<p>Maybe something about putting patterns about making hard things easy</p>
-									<a href="#">Read more →</a>
-							</article>
-					</div>
-			</section>
-			
-			<section class="featured">
-					<h2>Recent Photos</h2>
-					<div class="card-grid">
-							<article class="card">
-									<h3>Urban Geometry</h3>
-									<p>A study of lines and shapes in the city landscape.</p>
-									<a href="#">View gallery →</a>
-							</article>
-							<article class="card">
-									<h3>Morning Light</h3>
-									<p>Capturing the first rays of sunlight in natural settings.</p>
-									<a href="#">View gallery →</a>
-							</article>
-					</div>
-			</section>
+<Baselayout pageTitle="Home">
+    <section>
+        <p class="intro">
+            Software engineer, photographer, and minimalist. Exploring the intersection of technology and art.
+        </p>
+				<p>
+								You can find me on <a href="https://github.com/" target="_blank">GitHub</a>, 
+								<a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>, or send me an 
+								<a href="mailto:your.email@example.com">email</a>.
+				</p>
+    </section>
+    
+    <section>
+        <div class="section-header">
+            <h2>Blog</h2>
+            <a href="/posts" class="view-all">View all &rarr;</a>
+        </div>
+        <div class="grid">
+            {recentPosts.map((post) => (
+                <article class="card">
+                    <span class="date">{formatDate(post.data.date)}</span>
+                    <h3><a href={`/posts/${post.id}`}>{post.data.title}</a></h3>
+                    <p>{post.data.description || "No description available."}</p>
+                </article>
+            ))}
+        </div>
+    </section>
+
+    <section>
+        <div class="section-header">
+            <h2>Projects</h2>
+            <a href="/projects" class="view-all">View all &rarr;</a>
+        </div>
+        <div class="grid">
+            {recentProjects.map((project) => (
+                <article class="card">
+                    <span class="date">{formatDate(project.data.date)}</span>
+                    <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
+                    <p>{project.data.description}</p>
+                </article>
+            ))}
+        </div>
+    </section>
+    
+    <section>
+        <div class="section-header">
+            <h2>Photography</h2>
+            <a href="/photography" class="view-all">View all &rarr;</a>
+        </div>
+        <div class="grid">
+            {recentPhotos.map((photo) => (
+                <article class="card">
+                    <span class="date">{formatDate(photo.data.date)}</span>
+                    <h3><a href={`/photography/${photo.id}`}>{photo.data.title}</a></h3>
+                    <p>{photo.data.description}</p>
+                </article>
+            ))}
+        </div>
+    </section>
 </Baselayout>
