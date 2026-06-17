@@ -1,27 +1,27 @@
 ---
 import '../styles/global.css';
 
+const { pageTitle } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Personal Website</title>
+    <title>{pageTitle ? `${pageTitle} - ` : ''}Hendra.dev</title>
 </head>
 <body>
     <header>
-        <p class="constructionbanner">
-                <em>Under construction.</em> This site is undergoing a rewrite. Yes, I know, please dont judge. 🥲
-        </p>
-        <h1>Hendra.dev</h1>
+        <div class="constructionbanner">
+            <em>Work in progress.</em> Redesigning for simplicity.
+        </div>
         <nav>
             <ul>
               <li><a href="/">Home</a></li>
-              <li><a href="/posts">Posts</a></li>
-              <!-- <li><a href="/blog">Photography</a></li> -->
-              <li><a href="/blog">Links</a></li>
-              <li><a href="/blog">About/Contact</a></li>
+              <li><a href="/posts">Blog</a></li>
+              <li><a href="/projects">Projects</a></li>
+              <li><a href="/photography">Photography</a></li>
+              <!-- <li><a href="/about">About</a></li> -->
             </ul>
         </nav>
     </header>
@@ -31,7 +31,7 @@ import '../styles/global.css';
     </main>
     
     <footer>
-        <p>built with love via astro</p>
+        <span>&copy; {new Date().getFullYear()} Hendra.dev</span>
     </footer>
 </body>
 </html>

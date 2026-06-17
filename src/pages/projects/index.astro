@@ -1,0 +1,36 @@
+---
+import Baselayout from '../../layouts/Baselayout.astro';
+import { getCollection } from "astro:content";
+
+const allProjects = await getCollection("projects");
+const sortedProjects = allProjects.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+---
+
+<Baselayout pageTitle="Projects">
+    <div class="section-header">
+        <h2>Projects</h2>
+    </div>
+    
+    <div class="grid">
+        {sortedProjects.map((project) => (
+            <article class="card">
+                <span class="date">{formatDate(project.data.date)}</span>
+                <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
+                <p>{project.data.description}</p>
+                {project.data.tags && (
+                    <div style="font-size: 0.8rem; color: #999; margin-top: auto;">
+                        {project.data.tags.join(', ')}
+                    </div>
+                )}
+            </article>
+        ))}
+    </div>
+</Baselayout>
