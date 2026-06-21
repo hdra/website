@@ -1,6 +1,8 @@
 ---
 import Baselayout from '../../layouts/Baselayout.astro';
 import { getCollection } from "astro:content";
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 
 const allPhotos = await getCollection("photography");
 const sortedPhotos = allPhotos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -12,22 +14,50 @@ const formatDate = (date: Date) => {
     day: 'numeric'
   });
 };
+
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/photography/**/*.{jpg,jpeg,png,webp,gif,JPG,JPEG,PNG,WEBP}',
+  { eager: true }
+);
+
+const photosWithPreviews = await Promise.all(
+  sortedPhotos.map(async (photo) => {
+    const entryImgs = Object.entries(allImages)
+      .filter(([path]) => path.startsWith(`/src/content/photography/${photo.id}/`))
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    const match = photo.data.cover
+      ? entryImgs.find(([path]) => path.endsWith(`/${photo.data.cover}`)) ?? entryImgs[0]
+      : entryImgs[0];
+
+    if (!match) return { photo, previewSrc: null };
+
+    const processed = await getImage({ src: match[1].default, width: 900, format: 'webp' });
+    return { photo, previewSrc: processed.src };
+  })
+);
 ---
 
-<Baselayout pageTitle="Photography">
+<Baselayout pageTitle="Photo Journal">
     <div class="section-header">
-        <h2>Photography</h2>
+        <h2>Photo Journal</h2>
     </div>
-    
-    <div class="grid">
-        {sortedPhotos.map((photo) => (
-            <article class="card">
-                {photo.data.cover && (
-                    <img src={photo.data.cover} alt={photo.data.title} style="width: 100%; height: 200px; object-fit: cover; margin-bottom: 1rem; border-radius: 2px;" />
+    <p style="color: var(--secondary-color); font-size: 1rem; margin-bottom: 2.5rem; font-family: var(--font-sans);">Notes and photographs from the road.</p>
+
+    <div class="journal-list">
+        {photosWithPreviews.map(({ photo, previewSrc }) => (
+            <article class="journal-entry">
+                {previewSrc && (
+                    <a href={`/photography/${photo.id}`} tabindex="-1" aria-hidden="true">
+                        <img src={previewSrc} alt="" class="journal-preview" />
+                    </a>
                 )}
-                <span class="date">{formatDate(photo.data.date)}</span>
+                <div class="journal-entry-meta">
+                    <span class="date">{formatDate(photo.data.date)}</span>
+                    {photo.data.location && <span class="journal-location"> · {photo.data.location}</span>}
+                </div>
                 <h3><a href={`/photography/${photo.id}`}>{photo.data.title}</a></h3>
-                <p>{photo.data.description}</p>
+                {photo.data.description && <p>{photo.data.description}</p>}
             </article>
         ))}
     </div>

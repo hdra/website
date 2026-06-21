@@ -1,6 +1,8 @@
 ---
 import Baselayout from '../layouts/Baselayout.astro';
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 
 const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
@@ -17,6 +19,28 @@ const formatDate = (date: Date) => {
     day: 'numeric'
   });
 };
+
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/photography/**/*.{jpg,jpeg,png,webp,gif,JPG,JPEG,PNG,WEBP}',
+  { eager: true }
+);
+
+const recentPhotosWithPreviews = await Promise.all(
+  recentPhotos.map(async (photo) => {
+    const entryImgs = Object.entries(allImages)
+      .filter(([path]) => path.startsWith(`/src/content/photography/${photo.id}/`))
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    const match = photo.data.cover
+      ? entryImgs.find(([path]) => path.endsWith(`/${photo.data.cover}`)) ?? entryImgs[0]
+      : entryImgs[0];
+
+    if (!match) return { photo, previewSrc: null };
+
+    const processed = await getImage({ src: match[1].default, width: 900, format: 'webp' });
+    return { photo, previewSrc: processed.src };
+  })
+);
 ---
 <Baselayout pageTitle="Home">
     <section>
@@ -24,26 +48,30 @@ const formatDate = (date: Date) => {
             Software engineer, photographer, and minimalist. Exploring the intersection of technology and art.
         </p>
 				<p>
-								You can find me on <a href="https://github.com/" target="_blank">GitHub</a>, 
-								<a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>, or send me an 
+								You can find me on <a href="https://github.com/" target="_blank">GitHub</a>,
+								<a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>, or send me an
 								<a href="mailto:your.email@example.com">email</a>.
 				</p>
     </section>
-    
+
     <section>
         <div class="section-header">
             <h2>Blog</h2>
             <a href="/posts" class="view-all">View all &rarr;</a>
         </div>
-        <div class="grid">
-            {recentPosts.map((post) => (
-                <article class="card">
-                    <span class="date">{formatDate(post.data.date)}</span>
-                    <h3><a href={`/posts/${post.id}`}>{post.data.title}</a></h3>
-                    <p>{post.data.description || "No description available."}</p>
-                </article>
-            ))}
-        </div>
+        {recentPosts.length === 0 ? (
+            <p class="empty-state">Coming soon.</p>
+        ) : (
+            <div class="grid">
+                {recentPosts.map((post) => (
+                    <article class="card">
+                        <span class="date">{formatDate(post.data.date)}</span>
+                        <h3><a href={`/posts/${post.id}`}>{post.data.title}</a></h3>
+                        <p>{post.data.description || "No description available."}</p>
+                    </article>
+                ))}
+            </div>
+        )}
     </section>
 
     <section>
@@ -51,30 +79,43 @@ const formatDate = (date: Date) => {
             <h2>Projects</h2>
             <a href="/projects" class="view-all">View all &rarr;</a>
         </div>
-        <div class="grid">
-            {recentProjects.map((project) => (
-                <article class="card">
-                    <span class="date">{formatDate(project.data.date)}</span>
-                    <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
-                    <p>{project.data.description}</p>
-                </article>
-            ))}
-        </div>
+        {recentProjects.length === 0 ? (
+            <p class="empty-state">Coming soon.</p>
+        ) : (
+            <div class="grid">
+                {recentProjects.map((project) => (
+                    <article class="card">
+                        <span class="date">{formatDate(project.data.date)}</span>
+                        <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
+                        <p>{project.data.description}</p>
+                    </article>
+                ))}
+            </div>
+        )}
     </section>
-    
+
     <section>
         <div class="section-header">
             <h2>Photography</h2>
             <a href="/photography" class="view-all">View all &rarr;</a>
         </div>
-        <div class="grid">
-            {recentPhotos.map((photo) => (
-                <article class="card">
-                    <span class="date">{formatDate(photo.data.date)}</span>
-                    <h3><a href={`/photography/${photo.id}`}>{photo.data.title}</a></h3>
-                    <p>{photo.data.description}</p>
-                </article>
-            ))}
-        </div>
+        {recentPhotosWithPreviews.length === 0 ? (
+            <p class="empty-state">Coming soon.</p>
+        ) : (
+            <div class="grid">
+                {recentPhotosWithPreviews.map(({ photo, previewSrc }) => (
+                    <article class="card">
+                        {previewSrc && (
+                            <a href={`/photography/${photo.id}`} tabindex="-1" aria-hidden="true">
+                                <img src={previewSrc} alt="" class="journal-preview" />
+                            </a>
+                        )}
+                        <span class="date">{formatDate(photo.data.date)}</span>
+                        <h3><a href={`/photography/${photo.id}`}>{photo.data.title}</a></h3>
+                        <p>{photo.data.description}</p>
+                    </article>
+                ))}
+            </div>
+        )}
     </section>
 </Baselayout>

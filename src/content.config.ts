@@ -55,14 +55,16 @@ const projects = defineCollection({
 
 const photography = defineCollection({
   loader: glob({
-    pattern: "**/[^_]*.md",
+    pattern: "*/index.md",
     base: "./src/content/photography",
+    generateId: ({ entry }) => entry.replace("/index.md", ""),
   }),
   schema: z.object({
     title: z.string(),
     date: z.date(),
+    location: z.string().optional(),
+    description: z.string().optional(),
     cover: z.string().optional(),
-    description: z.string(),
   }),
 });
 

@@ -20,7 +20,7 @@ This is a personal site ([hendra.dev](https://beta.hendra.dev)) built with Astro
 
 - `blog` — Markdown posts under `src/content/posts/` (nested in category/year subdirs). Slugs are generated from `date + title` using `github-slugger`, not from file paths. The main blog listing (`/posts`) filters to posts from 2017 onward; pre-2017 posts are at `/posts/archives`.
 - `projects` — `src/content/projects/`
-- `photography` — `src/content/photography/`
+- `photography` — `src/content/photography/`. Each entry is a subdirectory containing an `index.md` and image files. Images can sit at the entry root or inside a `photos/` subdirectory. The `cover` frontmatter field (optional) sets the index listing preview image — specify it as a path relative to the entry directory (e.g. `photos/shot.jpg` or just `shot.jpg`). If omitted, the first image alphabetically is used.
 
 **Pages** (`src/pages/`) use file-based routing. Dynamic routes like `posts/[...slug].astro` render individual collection entries.
 

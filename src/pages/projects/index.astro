@@ -19,18 +19,22 @@ const formatDate = (date: Date) => {
         <h2>Projects</h2>
     </div>
     
-    <div class="grid">
-        {sortedProjects.map((project) => (
-            <article class="card">
-                <span class="date">{formatDate(project.data.date)}</span>
-                <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
-                <p>{project.data.description}</p>
-                {project.data.tags && (
-                    <div style="font-size: 0.8rem; color: #999; margin-top: auto;">
-                        {project.data.tags.join(', ')}
-                    </div>
-                )}
-            </article>
-        ))}
-    </div>
+    {sortedProjects.length === 0 ? (
+        <p class="empty-state">Coming soon.</p>
+    ) : (
+        <div class="grid">
+            {sortedProjects.map((project) => (
+                <article class="card">
+                    <span class="date">{formatDate(project.data.date)}</span>
+                    <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
+                    <p>{project.data.description}</p>
+                    {project.data.tags && (
+                        <div style="font-size: 0.8rem; color: #999; margin-top: auto;">
+                            {project.data.tags.join(', ')}
+                        </div>
+                    )}
+                </article>
+            ))}
+        </div>
+    )}
 </Baselayout>

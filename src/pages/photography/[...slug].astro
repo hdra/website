@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Baselayout from '../../layouts/Baselayout.astro';
 
 export async function getStaticPaths() {
@@ -19,24 +21,101 @@ const formatDate = (date: Date) => {
     day: 'numeric'
   });
 };
+
+// Discover all images across all entries at build time, then filter to this entry.
+// Images can live at the entry root or inside a /photos subdirectory.
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/photography/**/*.{jpg,jpeg,png,webp,gif,JPG,JPEG,PNG,WEBP}',
+  { eager: true }
+);
+
+const entryImageEntries = Object.entries(allImages)
+  .filter(([path]) => path.startsWith(`/src/content/photography/${photo.id}/`))
+  .sort(([a], [b]) => a.localeCompare(b));
+
+const processedImages = await Promise.all(
+  entryImageEntries.map(async ([path, mod]) => {
+    const filename = path.split('/').pop() ?? '';
+    const [thumb, full] = await Promise.all([
+      getImage({ src: mod.default, width: 800, format: 'webp' }),
+      getImage({ src: mod.default, width: 2400, format: 'webp' }),
+    ]);
+    return { filename, thumbSrc: thumb.src, fullSrc: full.src };
+  })
+);
 ---
 
 <Baselayout pageTitle={photo.data.title}>
-    <article class="photo-post">
-        <header style="margin-bottom: 3rem; text-align: center;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{photo.data.title}</h1>
-            <span class="date" style="font-family: var(--font-sans); color: #999; font-size: 0.9rem;">{formatDate(photo.data.date)}</span>
-            <p style="margin-top: 1rem; color: #555;">{photo.data.description}</p>
-        </header>
-        
-        {photo.data.cover && (
-            <div style="margin-bottom: 3rem;">
-                <img src={photo.data.cover} alt={photo.data.title} style="width: 100%; height: auto; display: block;" />
-            </div>
-        )}
-        
-        <div class="content" style="font-size: 1.1rem;">
-            <Content />
-        </div>
-    </article>
+  <article class="journal-post">
+    <div class="journal-entry-meta" style="margin-bottom: 1rem;">
+      <span class="date">{formatDate(photo.data.date)}</span>
+      {photo.data.location && <span class="journal-location"> · {photo.data.location}</span>}
+    </div>
+    <h1 style="margin-bottom: 2rem;">{photo.data.title}</h1>
+
+    <div class="content">
+      <Content />
+    </div>
+
+    {processedImages.length > 0 && (
+      <div class="photo-masonry" style="margin-top: 2.5rem;">
+        {processedImages.map((img) => (
+          <img
+            src={img.thumbSrc}
+            data-full={img.fullSrc}
+            alt={img.filename}
+            class="masonry-img"
+            loading="lazy"
+          />
+        ))}
+      </div>
+    )}
+  </article>
 </Baselayout>
+
+<div id="lightbox" aria-hidden="true">
+  <button id="lb-close" aria-label="Close">&#x2715;</button>
+  <button id="lb-prev" aria-label="Previous">&#x2039;</button>
+  <button id="lb-next" aria-label="Next">&#x203A;</button>
+  <img id="lb-img" src="" alt="" />
+</div>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const imgs = Array.from(document.querySelectorAll('.masonry-img'));
+  let current = 0;
+
+  function open(i) {
+    current = i;
+    lbImg.src = imgs[i].dataset.full;
+    lbImg.alt = imgs[i].alt;
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+
+  function close() {
+    lightbox.setAttribute('aria-hidden', 'true');
+    lbImg.src = '';
+  }
+
+  imgs.forEach((img, i) => img.addEventListener('click', () => open(i)));
+
+  document.getElementById('lb-close').addEventListener('click', close);
+  document.getElementById('lb-prev').addEventListener('click', () =>
+    open((current - 1 + imgs.length) % imgs.length)
+  );
+  document.getElementById('lb-next').addEventListener('click', () =>
+    open((current + 1) % imgs.length)
+  );
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.getAttribute('aria-hidden') === 'true') return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') open((current - 1 + imgs.length) % imgs.length);
+    if (e.key === 'ArrowRight') open((current + 1) % imgs.length);
+  });
+</script>
