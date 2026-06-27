@@ -25,7 +25,7 @@ const formatDate = (date: Date) => {
 // Discover all images across all entries at build time, then filter to this entry.
 // Images can live at the entry root or inside a /photos subdirectory.
 const allImages = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/content/photography/**/*.{jpg,jpeg,png,webp,gif,JPG,JPEG,PNG,WEBP}',
+  '/src/content/photography/**/*.{avif,gif,heic,jpeg,jpg,png,tiff,webp,AVIF,GIF,HEIC,JPEG,JPG,PNG,TIFF,WEBP}',
   { eager: true }
 );
 
@@ -36,11 +36,12 @@ const entryImageEntries = Object.entries(allImages)
 const processedImages = await Promise.all(
   entryImageEntries.map(async ([path, mod]) => {
     const filename = path.split('/').pop() ?? '';
-    const [thumb, full] = await Promise.all([
-      getImage({ src: mod.default, width: 800, format: 'webp' }),
-      getImage({ src: mod.default, width: 2400, format: 'webp' }),
+    const [thumb, fullAvif, fullWebp] = await Promise.all([
+      getImage({ src: mod.default, width: 1000, format: 'webp' }),
+      getImage({ src: mod.default, width: 2600, format: 'avif' }),
+      getImage({ src: mod.default, width: 2600, format: 'webp' }),
     ]);
-    return { filename, thumbSrc: thumb.src, fullSrc: full.src };
+    return { filename, thumbSrc: thumb.src, fullAvifSrc: fullAvif.src, fullWebpSrc: fullWebp.src };
   })
 );
 ---
@@ -62,7 +63,8 @@ const processedImages = await Promise.all(
         {processedImages.map((img) => (
           <img
             src={img.thumbSrc}
-            data-full={img.fullSrc}
+            data-full-avif={img.fullAvifSrc}
+            data-full-webp={img.fullWebpSrc}
             alt={img.filename}
             class="masonry-img"
             loading="lazy"
@@ -77,18 +79,23 @@ const processedImages = await Promise.all(
   <button id="lb-close" aria-label="Close">&#x2715;</button>
   <button id="lb-prev" aria-label="Previous">&#x2039;</button>
   <button id="lb-next" aria-label="Next">&#x203A;</button>
-  <img id="lb-img" src="" alt="" />
+  <picture id="lb-picture">
+    <source id="lb-source-avif" type="image/avif" />
+    <img id="lb-img" src="" alt="" />
+  </picture>
 </div>
 
 <script>
   const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lb-img');
-  const imgs = Array.from(document.querySelectorAll('.masonry-img'));
+  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
+  const lbSourceAvif = document.getElementById('lb-source-avif') as HTMLSourceElement;
+  const imgs = Array.from(document.querySelectorAll('.masonry-img')) as HTMLImageElement[];
   let current = 0;
 
-  function open(i) {
+  function open(i: number) {
     current = i;
-    lbImg.src = imgs[i].dataset.full;
+    lbSourceAvif.srcset = imgs[i].dataset.fullAvif ?? '';
+    lbImg.src = imgs[i].dataset.fullWebp ?? '';
     lbImg.alt = imgs[i].alt;
     lightbox.setAttribute('aria-hidden', 'false');
   }

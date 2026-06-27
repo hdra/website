@@ -7,11 +7,16 @@
     "dev:expose": "./dev-expose.sh",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "optimize-images": "node scripts/optimize-images.js"
   },
   "dependencies": {
     "astro": "^5.5.2",
     "github-slugger": "^2.0.0",
     "sass": "^1.86.0"
+  },
+  "devDependencies": {
+    "glob": "^13.0.6",
+    "imageoptim-cli": "^3.1.9"
   }
 }

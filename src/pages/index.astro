@@ -21,7 +21,7 @@ const formatDate = (date: Date) => {
 };
 
 const allImages = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/content/photography/**/*.{jpg,jpeg,png,webp,gif,JPG,JPEG,PNG,WEBP}',
+  '/src/content/photography/**/*.{avif,gif,heic,jpeg,jpg,png,tiff,webp,AVIF,GIF,HEIC,JPEG,JPG,PNG,TIFF,WEBP}',
   { eager: true }
 );
 
