@@ -26,14 +26,19 @@ const photosWithPreviews = await Promise.all(
       .filter(([path]) => path.startsWith(`/src/content/photography/${photo.id}/`))
       .sort(([a], [b]) => a.localeCompare(b));
 
+    const coverFile = entryImgs.find(([path]) => {
+      const name = path.split('/').pop() ?? '';
+      return /^cover\.(png|avif|webp|jpg|jpeg)$/i.test(name);
+    });
+
     const match = photo.data.cover
       ? entryImgs.find(([path]) => path.endsWith(`/${photo.data.cover}`)) ?? entryImgs[0]
-      : entryImgs[0];
+      : coverFile ?? entryImgs[0];
 
-    if (!match) return { photo, previewSrc: null };
+    if (!match) return { photo, previewSrc: null, coverPosition: photo.data.coverPosition };
 
-    const processed = await getImage({ src: match[1].default, width: 900, format: 'webp' });
-    return { photo, previewSrc: processed.src };
+    const processed = await getImage({ src: match[1].default, width: 1000, format: 'webp' });
+    return { photo, previewSrc: processed.src, coverPosition: photo.data.coverPosition };
   })
 );
 ---
@@ -45,11 +50,11 @@ const photosWithPreviews = await Promise.all(
     <p style="color: var(--secondary-color); font-size: 1rem; margin-bottom: 2.5rem; font-family: var(--font-sans);">Notes and photographs from the road.</p>
 
     <div class="journal-list">
-        {photosWithPreviews.map(({ photo, previewSrc }) => (
+        {photosWithPreviews.map(({ photo, previewSrc, coverPosition }) => (
             <article class="journal-entry">
                 {previewSrc && (
                     <a href={`/photography/${photo.id}`} tabindex="-1" aria-hidden="true">
-                        <img src={previewSrc} alt="" class="journal-preview" />
+                        <img src={previewSrc} alt="" class="journal-preview" style={coverPosition ? `object-position: ${coverPosition}` : undefined} />
                     </a>
                 )}
                 <div class="journal-entry-meta">

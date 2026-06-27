@@ -20,7 +20,14 @@ This is a personal site ([hendra.dev](https://beta.hendra.dev)) built with Astro
 
 - `blog` — Markdown posts under `src/content/posts/` (nested in category/year subdirs). Slugs are generated from `date + title` using `github-slugger`, not from file paths. The main blog listing (`/posts`) filters to posts from 2017 onward; pre-2017 posts are at `/posts/archives`.
 - `projects` — `src/content/projects/`
-- `photography` — `src/content/photography/`. Each entry is a subdirectory containing an `index.md` and image files. Images can sit at the entry root or inside a `photos/` subdirectory. The `cover` frontmatter field (optional) sets the index listing preview image — specify it as a path relative to the entry directory (e.g. `photos/shot.jpg` or just `shot.jpg`). If omitted, the first image alphabetically is used.
+- `photography` — `src/content/photography/`. Each entry is a subdirectory containing an `index.md` and image files. Images can sit at the entry root or inside a `photos/` subdirectory.
+  - `cover` (optional) — path relative to the entry directory (e.g. `photos/shot.jpg`) to use as the listing preview. If omitted, a file named `cover.*` (any extension) is used if present, otherwise the first image alphabetically.
+  - `coverPosition` (optional) — sets `object-position` on the preview image in the listing. Controls which part of the image is visible within the fixed-height crop. Accepts any CSS `object-position` value:
+    - Keywords: `top`, `bottom`, `left`, `right`, `center`, combinable e.g. `top left`, `center right`
+    - Percentages: `50% 25%` (x y) — `0% 0%` is top-left, `100% 100%` is bottom-right
+    - Lengths: `0px 100px`
+    - Mixed: `50% 30px`
+    - Default (when omitted): `50% 50%` (centered)
 
 **Pages** (`src/pages/`) use file-based routing. Dynamic routes like `posts/[...slug].astro` render individual collection entries.
 

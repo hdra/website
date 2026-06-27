@@ -65,6 +65,9 @@ const photography = defineCollection({
     location: z.string().optional(),
     description: z.string().optional(),
     cover: z.string().optional(),
+    // object-position for the listing preview crop. Keywords: top, bottom, left, right, center (combinable e.g. "top left").
+    // Percentages: "50% 25%" (x y). Lengths: "0px 100px". Mixed: "50% 30px". Default: "50% 50%" (centered).
+    coverPosition: z.string().optional(),
   }),
 });
 
