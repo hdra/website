@@ -209,6 +209,16 @@ footer {
     opacity: 0.9;
 }
 
+.photo-masonry[data-count="1"],
+.photo-masonry[data-count="2"] {
+    left: 0;
+    transform: none;
+    width: 100%;
+}
+
+.photo-masonry[data-count="1"] { columns: 1; max-width: 600px; }
+.photo-masonry[data-count="2"] { columns: 2; max-width: 900px; }
+
 @media (max-width: 700px) {
     .photo-masonry {
         columns: 2;
@@ -216,7 +226,8 @@ footer {
 }
 
 @media (max-width: 420px) {
-    .photo-masonry {
+    .photo-masonry,
+    .photo-masonry[data-count="2"] {
         columns: 1;
     }
 }

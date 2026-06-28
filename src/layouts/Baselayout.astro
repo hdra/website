@@ -8,12 +8,12 @@ const { pageTitle } = Astro.props;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{pageTitle ? `${pageTitle} - ` : ''}Hendra.dev</title>
+    <title>{pageTitle ? `${pageTitle} - ` : ''}hendra.dev</title>
 </head>
 <body>
     <header>
         <div class="constructionbanner">
-            <em>Work in progress.</em> Redesigning for simplicity.
+				   <em>Notes, projects, photos, and other mental clutter.</em>
         </div>
         <nav>
             <ul>
@@ -31,7 +31,8 @@ const { pageTitle } = Astro.props;
     </main>
     
     <footer>
-        <span>&copy; {new Date().getFullYear()} Hendra.dev</span>
+        <span>&copy; {new Date().getFullYear()} hendra.dev</span>
+        <em>Work in progress.</em>
     </footer>
 </body>
 </html>

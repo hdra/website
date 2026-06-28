@@ -59,7 +59,7 @@ const processedImages = await Promise.all(
     </div>
 
     {processedImages.length > 0 && (
-      <div class="photo-masonry" style="margin-top: 2.5rem;">
+      <div class="photo-masonry" data-count={processedImages.length} style="margin-top: 2.5rem;">
         {processedImages.map((img) => (
           <img
             src={img.thumbSrc}

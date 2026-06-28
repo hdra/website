@@ -8,9 +8,9 @@ const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
 const allPhotos = await getCollection('photography');
 
-const recentPosts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const recentPosts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 4);
 const recentProjects = allProjects.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
-const recentPhotos = allPhotos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const recentPhotos = allPhotos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 4);
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -45,7 +45,7 @@ const recentPhotosWithPreviews = await Promise.all(
 <Baselayout pageTitle="Home">
     <section>
         <p class="intro">
-            Software engineer, photographer, and minimalist. Exploring the intersection of technology and art.
+								Personal website. No grand mission. Things I've built, photographed, or found interesting enough to write down.
         </p>
 				<p>
 								You can find me on <a href="https://github.com/" target="_blank">GitHub</a>,
